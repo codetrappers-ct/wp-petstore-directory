@@ -1,0 +1,127 @@
+/**
+ * Pet Table widget styles.
+ *
+ * Defaults are intentionally neutral so the Elementor Style controls
+ * (border color, header background, header text) have something to override.
+ */
+
+.wppd-pet-table table {
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid #e2e4e7;
+	font-size: 0.95em;
+}
+
+.wppd-pet-table th,
+.wppd-pet-table td {
+	border: 1px solid #e2e4e7;
+	padding: 0.6em 0.8em;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.wppd-pet-table thead th {
+	background-color: #f4f5f7;
+	font-weight: 600;
+}
+
+.wppd-pet-table tbody tr:nth-child(even) {
+	background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Photo column */
+.wppd-pet-table .wppd-col-photo {
+	width: 72px;
+	text-align: center;
+}
+
+.wppd-pet-table .wppd-photo {
+	width: 56px;
+	height: 56px;
+	object-fit: cover;
+	border-radius: 4px;
+	display: inline-block;
+}
+
+.wppd-pet-table .wppd-no-photo {
+	color: #a0a5aa;
+}
+
+/* Status badge */
+.wppd-pet-table .wppd-status {
+	display: inline-block;
+	padding: 0.15em 0.6em;
+	border-radius: 999px;
+	font-size: 0.85em;
+	line-height: 1.6;
+	text-transform: capitalize;
+	background: #eceff1;
+	color: #37474f;
+}
+
+.wppd-pet-table .wppd-status--available {
+	background: #e6f4ea;
+	color: #1e7e34;
+}
+
+.wppd-pet-table .wppd-status--pending {
+	background: #fef7e0;
+	color: #a86500;
+}
+
+.wppd-pet-table .wppd-status--sold {
+	background: #fce8e6;
+	color: #c5221f;
+}
+
+/* Empty / error message box */
+.wppd-pet-table--message {
+	padding: 1em 1.2em;
+	border: 1px dashed #cfd3d7;
+	border-radius: 6px;
+	color: #50575e;
+	background: #fbfbfc;
+}
+
+.wppd-pet-table--message .wppd-error {
+	color: #c5221f;
+	margin: 0;
+}
+
+.wppd-pet-table--message .wppd-empty {
+	margin: 0;
+}
+
+/* Pagination */
+.wppd-pagination {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1em;
+	margin-top: 0.9em;
+}
+
+.wppd-pagination button {
+	cursor: pointer;
+	padding: 0.4em 1em;
+	border: 1px solid #cfd3d7;
+	border-radius: 4px;
+	background: #fff;
+	color: #1d2327;
+	font: inherit;
+}
+
+.wppd-pagination button:hover:not([disabled]) {
+	background: #f0f1f2;
+}
+
+.wppd-pagination button[disabled] {
+	opacity: 0.5;
+	cursor: default;
+}
+
+.wppd-pagination .wppd-page-status {
+	color: #50575e;
+	min-width: 8ch;
+	text-align: center;
+}

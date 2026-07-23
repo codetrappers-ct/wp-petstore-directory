@@ -12,14 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers the plugin's custom Elementor category and the Pet Table widget.
- *
- * This scaffold wires the object up; the category and widget registration are
- * implemented in the Elementor-widget step.
+ * Registers the plugin's custom Elementor category, the Pet Table widget, and
+ * the widget's front-end assets.
  */
 class Elementor_Manager {
 
 	const CATEGORY_SLUG = 'petstore';
+	const ASSET_HANDLE  = 'wppd-pet-table';
 
 	/**
 	 * API client dependency.
@@ -47,10 +46,60 @@ class Elementor_Manager {
 	}
 
 	/**
-	 * Register Elementor hooks. Category + widget registration land next.
+	 * Register Elementor + asset hooks.
 	 */
 	public function register_hooks() {
-		// elementor/elements/categories_registered + elementor/widgets/register
-		// are added in the Elementor-widget step.
+		add_action( 'elementor/elements/categories_registered', array( $this, 'register_category' ) );
+		add_action( 'elementor/widgets/register', array( $this, 'register_widgets' ) );
+
+		// Register (not enqueue) assets so the widget can declare them as
+		// dependencies — Elementor then loads them only on pages that use it.
+		// wp_enqueue_scripts also fires for the editor preview iframe.
+		add_action( 'wp_enqueue_scripts', array( $this, 'register_assets' ), 5 );
+	}
+
+	/**
+	 * Add the custom "Petstore" category to the editor panel.
+	 *
+	 * @param \Elementor\Elements_Manager $elements_manager Elementor categories manager.
+	 */
+	public function register_category( $elements_manager ) {
+		$elements_manager->add_category(
+			self::CATEGORY_SLUG,
+			array(
+				'title' => __( 'Petstore', 'wp-petstore-directory' ),
+				'icon'  => 'fa fa-paw',
+			)
+		);
+	}
+
+	/**
+	 * Register the Pet Table widget.
+	 *
+	 * @param \Elementor\Widgets_Manager $widgets_manager Elementor widgets manager.
+	 */
+	public function register_widgets( $widgets_manager ) {
+		require_once WPPD_PLUGIN_DIR . 'widgets/class-pet-table-widget.php';
+		$widgets_manager->register( new Pet_Table_Widget() );
+	}
+
+	/**
+	 * Register the widget's CSS and JS handles.
+	 */
+	public function register_assets() {
+		wp_register_style(
+			self::ASSET_HANDLE,
+			WPPD_PLUGIN_URL . 'assets/css/pet-table.css',
+			array(),
+			WPPD_VERSION
+		);
+
+		wp_register_script(
+			self::ASSET_HANDLE,
+			WPPD_PLUGIN_URL . 'assets/js/pet-table.js',
+			array(),
+			WPPD_VERSION,
+			true
+		);
 	}
 }
