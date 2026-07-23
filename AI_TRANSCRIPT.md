@@ -98,15 +98,7 @@ than quietly working around them.
 
 ## Raw transcript
 
-<!--
-  PASTE THE RAW CHAT EXPORT BELOW.
-
-  From the Claude Code client, export this session's full prompt/response
-  history and paste it here (or attach the exported file alongside this
-  document and link it from here).
-
-  This placeholder is intentionally left empty rather than reconstructed from
-  memory, so that nothing in this file is presented as verbatim when it is not.
--->
-
-_Not yet attached — export from the Claude Code client and paste here._
+The full, unedited prompt/response history for this session is exported to
+**[RAW_TRANSCRIPT.md](RAW_TRANSCRIPT.md)** (203 turns), taken directly from the
+Claude Code session log. The summary above is a reader's guide to it; the raw
+file is the evidence.
