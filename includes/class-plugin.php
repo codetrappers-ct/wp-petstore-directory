@@ -62,7 +62,16 @@ final class Plugin {
 		$this->settings->register_hooks();
 
 		// Elementor integration is optional: only wire it if Elementor is present.
-		add_action( 'elementor/loaded', array( $this, 'init_elementor' ) );
+		// Elementor loads alphabetically before this plugin, so 'elementor/loaded'
+		// has usually fired already by the time we bootstrap — hooking it now would
+		// be too late and the widget would never register. Detect the already-loaded
+		// case and initialise immediately; otherwise fall back to the hook (covers
+		// the rare case where this plugin loads first).
+		if ( did_action( 'elementor/loaded' ) || class_exists( '\Elementor\Plugin' ) ) {
+			$this->init_elementor();
+		} else {
+			add_action( 'elementor/loaded', array( $this, 'init_elementor' ) );
+		}
 	}
 
 	/**
