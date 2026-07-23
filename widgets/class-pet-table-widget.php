@@ -248,9 +248,15 @@ class Pet_Table_Widget extends Widget_Base {
 			return;
 		}
 
-		$status_label = isset( $allowed[ $status ] ) ? $allowed[ $status ] : $status;
+		// Variables consumed by the template, prefixed so the partial never
+		// relies on (or leaks) unprefixed names — presentation and escaping
+		// happen there.
+		$wppd_pets          = $pets;
+		$wppd_rows_per_page = $rows_per_page;
+		$wppd_show_photo    = $show_photo;
+		$wppd_status_label  = isset( $allowed[ $status ] ) ? $allowed[ $status ] : $status;
+		$wppd_is_edit_mode  = $is_edit_mode;
 
-		// Presentation lives in the template; all output escaped there.
 		include WPPD_PLUGIN_DIR . 'templates/pet-table.php';
 	}
 

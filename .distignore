@@ -1,0 +1,11 @@
+# Files kept in the repo for the assessment but excluded from the built plugin
+# zip (e.g. via `wp dist-archive`). None of these are part of the shippable
+# plugin; excluding them keeps the distributed artifact clean.
+/.git
+/.github
+/.gitignore
+/.distignore
+/.DS_Store
+/PLAN.md
+/docs
+/tests
