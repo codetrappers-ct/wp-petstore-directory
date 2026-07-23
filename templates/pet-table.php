@@ -9,6 +9,7 @@
  * @var bool   $show_photo    Whether to render the photo column.
  * @var string $status        Resolved status filter.
  * @var string $status_label  Human label for the status.
+ * @var bool   $is_edit_mode  Whether rendering inside the Elementor editor.
  *
  * @package WP_Petstore_Directory
  */
@@ -17,20 +18,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+$is_edit_mode = ! empty( $is_edit_mode );
+
 // Empty state — a valid outcome (the API returns HTTP 200 + [] for statuses
 // with no pets), distinct from the error state handled in the widget.
 if ( empty( $pets ) ) :
+	// An empty pending/sold set is normal, but reads as a bug in the editor, so
+	// the builder gets an actionable hint while visitors get a plain message.
+	if ( $is_edit_mode ) {
+		$empty_message = sprintf(
+			/* translators: %s: status label, e.g. "Available". */
+			esc_html__( 'No pets returned for status “%s”. Try a different status filter, or verify the API under Settings → Petstore Directory.', 'wp-petstore-directory' ),
+			esc_html( $status_label )
+		);
+	} else {
+		$empty_message = sprintf(
+			/* translators: %s: status label, e.g. "Available". */
+			esc_html__( 'No pets found for status “%s”.', 'wp-petstore-directory' ),
+			esc_html( $status_label )
+		);
+	}
 	?>
 	<div class="wppd-pet-table wppd-pet-table--message">
-		<p class="wppd-empty">
-			<?php
-			printf(
-				/* translators: %s: status label, e.g. "Available". */
-				esc_html__( 'No pets found for status “%s”.', 'wp-petstore-directory' ),
-				esc_html( $status_label )
-			);
-			?>
-		</p>
+		<?php // $empty_message is built from escaped parts above. ?>
+		<p class="wppd-empty"><?php echo $empty_message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 	</div>
 	<?php
 	return;

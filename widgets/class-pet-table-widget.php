@@ -217,8 +217,9 @@ class Pet_Table_Widget extends Widget_Base {
 		$settings = $this->get_settings_for_display();
 		$plugin   = Plugin::instance();
 
-		$status  = $this->resolve_status( $settings );
-		$allowed = Settings::allowed_statuses();
+		$status       = $this->resolve_status( $settings );
+		$allowed      = Settings::allowed_statuses();
+		$is_edit_mode = $this->is_edit_mode();
 
 		$rows_per_page = isset( $settings['rows_per_page'] ) ? (int) $settings['rows_per_page'] : 10;
 		if ( $rows_per_page < 1 ) {
@@ -228,12 +229,22 @@ class Pet_Table_Widget extends Widget_Base {
 
 		$pets = $plugin->api_client()->get_pets( $status );
 
-		// Error state — API unreachable and no cached fallback. Keep the message
-		// generic so we never leak internals to visitors.
+		// Error state — API unreachable and no cached fallback.
 		if ( is_wp_error( $pets ) ) {
-			echo '<div class="wppd-pet-table wppd-pet-table--message"><p class="wppd-error">'
-				. esc_html__( 'The pet directory is temporarily unavailable. Please try again later.', 'wp-petstore-directory' )
-				. '</p></div>';
+			$this->log_error( $pets, $status );
+
+			// Visitors see a generic, reassuring message; the page builder gets
+			// the specific reason so config can be fixed without reading logs.
+			$message = $is_edit_mode
+				? sprintf(
+					/* translators: 1: error code, 2: error detail. */
+					__( 'Pet Table could not load pets (%1$s: %2$s). Check the API Base URL under Settings → Petstore Directory.', 'wp-petstore-directory' ),
+					$pets->get_error_code(),
+					$pets->get_error_message()
+				)
+				: __( 'The pet directory is temporarily unavailable. Please try again later.', 'wp-petstore-directory' );
+
+			$this->render_message( 'wppd-error', $message );
 			return;
 		}
 
@@ -241,5 +252,52 @@ class Pet_Table_Widget extends Widget_Base {
 
 		// Presentation lives in the template; all output escaped there.
 		include WPPD_PLUGIN_DIR . 'templates/pet-table.php';
+	}
+
+	/**
+	 * Whether we are rendering inside the Elementor editor/preview.
+	 *
+	 * @return bool
+	 */
+	private function is_edit_mode() {
+		if ( ! class_exists( '\Elementor\Plugin' ) ) {
+			return false;
+		}
+		$elementor = \Elementor\Plugin::instance();
+		return isset( $elementor->editor ) && $elementor->editor->is_edit_mode();
+	}
+
+	/**
+	 * Log an API failure server-side (only when debugging), without exposing
+	 * internals to visitors.
+	 *
+	 * @param \WP_Error $error  The error returned by the client.
+	 * @param string    $status Status that was requested.
+	 */
+	private function log_error( $error, $status ) {
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				sprintf(
+					'[wp-petstore-directory] get_pets("%s") failed: %s (%s)',
+					$status,
+					$error->get_error_message(),
+					$error->get_error_code()
+				)
+			);
+		}
+	}
+
+	/**
+	 * Render a single-message box (error or empty state) with escaped output.
+	 *
+	 * @param string $class   Extra CSS class on the paragraph.
+	 * @param string $message Human-readable, unescaped message.
+	 */
+	private function render_message( $class, $message ) {
+		printf(
+			'<div class="wppd-pet-table wppd-pet-table--message"><p class="%1$s">%2$s</p></div>',
+			esc_attr( $class ),
+			esc_html( $message )
+		);
 	}
 }
