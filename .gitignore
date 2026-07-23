@@ -8,4 +8,7 @@ vendor/
 Thumbs.db
 INSTRUCTIONS.md
 NOTES.md
-dist/
+# Build output is ignored, except the versioned release zip, which is a
+# submission deliverable and must be tracked.
+dist/*
+!dist/wp-petstore-directory-*.zip
